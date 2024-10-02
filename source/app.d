@@ -7,7 +7,7 @@ byte[4] registers = [0,0,0,0];
 
 ubyte[] program_memory;
 
-byte[4000] memory;
+byte[4000] memory; //4 Kb seems like enough for now :P
 
 bool halt = false;
 
