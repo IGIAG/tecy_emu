@@ -1,0 +1,16 @@
+.dub
+docs.json
+__dummy.html
+docs/
+/tecy_emu
+tecy_emu.so
+tecy_emu.dylib
+tecy_emu.dll
+tecy_emu.a
+tecy_emu.lib
+tecy_emu-test-*
+*.exe
+*.pdb
+*.o
+*.obj
+*.lst

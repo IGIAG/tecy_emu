@@ -1,0 +1,9 @@
+{
+	"authors": [
+		"Krzysztof Kubicz"
+	],
+	"copyright": "Copyright © 2024, Krzysztof Kubicz",
+	"description": "Emulator procesora z pierwszego wykladu Techniki Cyfrowej",
+	"license": "CC-BY-SA-4.0",
+	"name": "tecy_emu"
+}
