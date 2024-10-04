@@ -13,7 +13,7 @@ bool halt = false;
 
 void main(string[] args)
 {
-	program_memory = cast(byte[])std.file.read(args[1]);
+	program_memory = cast(ubyte[])std.file.read(args[1]);
 	writefln("loaded %s program bytes",program_memory.length);
 	writefln("%s",program_memory);
 
