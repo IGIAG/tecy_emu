@@ -1,5 +1,9 @@
 import std.stdio;
 import std.file;
+import std.algorithm: canFind;
+import core.thread;
+import std.conv : parse;
+import std.typecons : Flag, Yes, No;
 
 ushort program_counter = 0;
 
@@ -7,13 +11,38 @@ byte[4] registers = [0,0,0,0];
 
 ubyte[] program_memory;
 
-byte[4000] memory; //4 Kb seems like enough for now :P
+byte[255] memory;
+
+ushort clock_delay = 0;
 
 bool halt = false;
 
 void main(string[] args)
 {
-	program_memory = cast(ubyte[])std.file.read(args[1]);
+	if(args.length == 1){
+		writeln(import("./help.txt"));
+		return;
+	}
+	for(int i = 0;i < args.length;i++){
+		if(args[i] == "--help"){
+			writeln(import("./help.txt"));
+			return;
+		}
+		if(args[i] == "--bin"){
+			program_memory = cast(ubyte[])std.file.read(args[i + 1]);
+			i++;
+		}
+		if(args[i] == "--slow"){
+			auto a = parse!ushort(args[i + 1]);
+			clock_delay = a;
+			i++;
+		}
+	}
+
+	
+
+
+	
 	writefln("loaded %s program bytes",program_memory.length);
 	writefln("%s",program_memory);
 
@@ -23,6 +52,9 @@ void main(string[] args)
 	while(!halt){
 		step();
 		writefln("Registers: %s",registers);
+		if(clock_delay > 0){
+		Thread.sleep(dur!"msecs"(clock_delay));
+		}
 	}
 
 }
@@ -86,6 +118,11 @@ void step(){
 			break;
 		case 11://JLT Rd,immed - if Rd < 0 -> PC = immed
 			if(registers[Rd] < 0){
+				if(immed == program_counter - 2){
+				writefln("PC AT LOOPING PC: %s IMMED: %s - HALTING",program_counter,immed); //Just a basic halt if in a pointless loop
+				halt = true;
+			}
+			program_counter = immed;
 				program_counter = immed;
 			}
 			break;
@@ -108,6 +145,9 @@ void step(){
 		default:
 			//Some bad shit happened!
 			return;
+		
 	}
+	
+	
 
 }
