@@ -7,13 +7,17 @@ import std.typecons : Flag, Yes, No;
 
 ushort program_counter = 0;
 
-byte[4] registers = [0,0,0,0];
+ubyte[4] registers = [0,0,0,0];
 
 ubyte[] program_memory;
 
 byte[255] memory;
 
 ushort clock_delay = 0;
+
+bool step_clock = false;
+
+bool halt_on_error = true;
 
 bool halt = false;
 
@@ -37,6 +41,12 @@ void main(string[] args)
 			clock_delay = a;
 			i++;
 		}
+		if(args[i] == "--step"){
+			step_clock = true;
+		}
+		if(args[i] == "--ignore-error"){
+			halt_on_error = false;
+		}
 	}
 
 	
@@ -52,6 +62,11 @@ void main(string[] args)
 	while(!halt){
 		step();
 		writefln("Registers: %s",registers);
+		if(step_clock){
+			writeln("STEP MODE ENABLED - PRESS ENTER FOR NEXT CYCLE!");
+			readln();
+
+		}
 		if(clock_delay > 0){
 		Thread.sleep(dur!"msecs"(clock_delay));
 		}
@@ -84,10 +99,19 @@ void step(){
 			registers[Rd] = registers[Rd] | registers[Rs];
 			break;
 		case 2: //ADD Rd,Rs - Rd = Rd + Rs
-			registers[Rd] = cast(byte)(registers[Rd] + registers[Rs]); //TODO: Add flags for overflow
+			if(registers[Rd] > cast(ubyte)(registers[Rd] + registers[Rs]) && halt_on_error){
+				writeln("\x1B[33mAn integer overflow has occured. Press enter to continue.\x1B[0m");
+				readln();
+			}
+			registers[Rd] = cast(ubyte)(registers[Rd] + registers[Rs]); //TODO: Add flags for overflow
+			
 			break;
 		case 3: //SUB Rd,Rs - Rd = Rd - Rs
-			registers[Rd] = cast(byte)(registers[Rd] - registers[Rs]); //TODO: Add flags for underflow
+			if(registers[Rd] < cast(ubyte)(registers[Rd] - registers[Rs]) && halt_on_error){
+				writeln("\x1B[33mAn integer underflow has occured. Press enter to continue.\x1B[0m");
+				readln();
+			}
+			registers[Rd] = cast(ubyte)(registers[Rd] - registers[Rs]); //TODO: Add flags for underflow
 			break;
 		case 4: //LW Rd,(Rs) - Rd = Mem(Rs)
 			registers[Rd] = memory[registers[Rs]];
