@@ -22,4 +22,6 @@ Parametry
 
 --slow [milisekundy] - spowalnia procesor o x milisekund.
 
---ignore-error - Normalnie, gdy procesor napotka problem ( na przkład overflow przy dodawaniu ), zatrzymuje się. Ta opcja wyłącza to zachowanie
+--ignore-error - Normalnie, gdy procesor napotka problem ( na przkład overflow przy dodawaniu ), zatrzymuje się. Ta opcja wyłącza to zachowanie.
+
+--step - Przełącza procesor w tryb pracy krokowej.
